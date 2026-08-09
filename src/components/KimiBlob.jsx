@@ -110,7 +110,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         glow.style.pointerEvents = 'none';
         laser.appendChild(glow);
 
-        // --- Layer 2: Wide core beam (white-hot → cyan) ---
+        // --- Layer 2: Sharp core beam (white-hot → cyan → deep blue) ---
         const beam = document.createElement('div');
         beam.style.position = 'absolute';
         beam.style.left = `${eyeX}px`;
@@ -132,27 +132,6 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         beam.style.animation = 'kiki-beam-core-pulse 1.6s steps(4, jump-none) infinite';
         beam.style.pointerEvents = 'none';
         laser.appendChild(beam);
-
-        // --- Layer 3: Sharp white-hot core (thin central line, like Octocat's laser-core) ---
-        const sharpCore = document.createElement('div');
-        sharpCore.style.position = 'absolute';
-        sharpCore.style.left = `${eyeX}px`;
-        sharpCore.style.top = `${eyeY}px`;
-        sharpCore.style.width = `${Math.max(beamLen, 1)}px`;
-        sharpCore.style.height = '4px';
-        sharpCore.style.transformOrigin = '0 50%';
-        sharpCore.style.transform = `rotate(${angle}rad)`;
-        sharpCore.style.borderRadius = '2px';
-        sharpCore.style.background = 'linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #00faff 50%, #0288d1 100%)';
-        sharpCore.style.boxShadow = `
-          0 0 2px 1px rgba(255, 255, 255, ${a * 1}),
-          0 0 4px 2px rgba(0, 250, 255, ${a * 1}),
-          0 0 8px 3px rgba(2, 229, 255, ${a * 0.9}),
-          0 0 16px 4px rgba(2, 136, 209, ${a * 0.6})
-        `;
-        sharpCore.style.animation = 'kiki-beam-core-pulse 1.6s steps(4, jump-none) infinite';
-        sharpCore.style.pointerEvents = 'none';
-        laser.appendChild(sharpCore);
       };
 
       createBeam(eyeLX, eyeLY, endLX, endLY, angleL);
