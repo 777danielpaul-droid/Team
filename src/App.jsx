@@ -20,8 +20,16 @@ export default function App() {
 
       {/* Globale Styles: lila Icon-Tönung + Mond-Glow */}
       <style>{`
-        /* Lila-Tönung für alle Icons (Octocat, Starfish) statt schwarz/weiß */
-        .octocat-corner, .starfish-wrapper {
+        /* Mondlicht-Glow nur auf das cat-SVG-Symbol, NICHT auf die Laser */
+        .cat-svg.moonlit {
+          filter: sepia(0.9) hue-rotate(225deg) saturate(2.5) brightness(1.1)
+                  drop-shadow(0 0 30px #e0b0ff)
+                  drop-shadow(0 0 60px #a870ff);
+          animation: moonGlow 4.2s ease-in-out infinite;
+        }
+
+        /* Lila-Tönung für den Sternstern */
+        .starfish-wrapper {
           filter: sepia(0.9) hue-rotate(225deg) saturate(2.5) brightness(1.1);
         }
 
@@ -29,18 +37,13 @@ export default function App() {
           0%, 100% {
             filter: sepia(0.9) hue-rotate(225deg) saturate(2.5) brightness(1.1)
                     drop-shadow(0 0 30px #e0b0ff)
-                    drop-shadow(0 0 60px #a870ff)
-                    drop-shadow(0 0 100px #88ccee);
+                    drop-shadow(0 0 60px #a870ff);
           }
           50% {
             filter: sepia(0.9) hue-rotate(225deg) saturate(2.5) brightness(1.15)
                     drop-shadow(0 0 24px #e0b0ff)
-                    drop-shadow(0 0 48px #a870ff)
-                    drop-shadow(0 0 80px #88ccee);
+                    drop-shadow(0 0 48px #a870ff);
           }
-        }
-        .octocat-corner {
-          animation: moonGlow 4.2s ease-in-out infinite;
         }
       `}</style>
 
