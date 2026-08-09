@@ -318,9 +318,8 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         const elapsed = performance.now() - laserActiveSince;
         if (elapsed >= 2000 && blobLaserCallback) blobLaserCallback(true); // >2s → Octokat start
       } else if (laserActiveSince !== null) {
-        // Laser gerade ausgegangen — erst nach kurzer Verzögerung zurücksetzen
-        const elapsed = performance.now() - laserActiveSince;
-        if (elapsed < 1800 && blobLaserCallback) blobLaserCallback(false); // <2s → nie ausgelöst, aber stopp
+        // Laser gerade ausgegangen — IMMER Octokat stoppen (egal wie lange er aktiv war)
+        if (blobLaserCallback) blobLaserCallback(false); // SOFORT stopp → Octokat hört auf
         laserActiveSince = null;
       }
 
