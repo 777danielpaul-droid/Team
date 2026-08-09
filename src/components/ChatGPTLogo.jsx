@@ -2,7 +2,7 @@ import React from 'react';
 
 const ChatGPTLogo = ({ size = 200 }) => {
   return (
-    <div className="fixed left-1/2 z-10 pointer-events-none" style={{ top: '397px', transform: 'translate(100px, 0)' }}>
+    <div className="fixed left-1/2 z-10 pointer-events-none" style={{ top: '397px', transform: 'translate(100px, 0)', animation: 'ghostPulse30 3.2s ease-in-out infinite' }}>
       <style>{`
         @keyframes draw {
           0%   { stroke-dashoffset: 1000; }
@@ -19,6 +19,10 @@ const ChatGPTLogo = ({ size = 200 }) => {
         @keyframes rotateSlow {
           0%   { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        @keyframes ghostPulse30 {
+          0%, 100% { opacity: 0; }
+          50%      { opacity: 0.3; }
         }
         .logo-path {
           stroke-dasharray: 1000;
