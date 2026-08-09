@@ -139,7 +139,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         const sharpCore = document.createElement('div');
         sharpCore.style.position = 'absolute';
         sharpCore.style.left = `${eyeX}px`;
-        sharpCore.style.top = `${eyeY - 2}px`; // vertikal zentriert in 16px Core
+        sharpCore.style.top = `${eyeY + 6}px`; // vertikal zentriert im 16px Core (16/2=8 → 8-4/2=6)
         sharpCore.style.width = `${Math.max(beamLen, 1)}px`;
         sharpCore.style.height = '4px';
         sharpCore.style.transformOrigin = '0 50%';
