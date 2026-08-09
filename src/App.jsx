@@ -5,11 +5,13 @@ import ClaudeNeonStarfish from './components/ClaudeNeonStarfish';
 export default function App() {
   return (
     <div className="fixed top-0 left-0 w-full h-screen bg-black z-0">
-      {/* Bild als Hintergrund in lila Tönung */}
+      {/* Bild als Hintergrund (etwas kleiner skaliert) */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-15"
+        className="absolute inset-0 bg-no-repeat opacity-15"
         style={{
           backgroundImage: "url('/hermi.png')",
+          backgroundPosition: "center",
+          backgroundSize: "65%",
           filter: "sepia(0.8) hue-rotate(225deg) saturate(3) brightness(0.6) contrast(1.2)"
         }}
       />
