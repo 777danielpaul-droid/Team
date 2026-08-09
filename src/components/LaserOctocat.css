@@ -7,6 +7,28 @@
   cursor: crosshair;
 }
 
+/* Compact corner variant: constrains container, cat scales down */
+.octocat-corner .laser-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.octocat-corner .laser-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.octocat-corner .cat-svg {
+  width: 128px;
+  height: 128px;
+}
+
 .cat-wrapper {
   position: absolute;
   top: 50%;
