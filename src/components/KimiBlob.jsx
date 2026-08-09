@@ -88,7 +88,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       const dLeft = Math.sqrt((mouseX - leftEyeX) ** 2 + (mouseY - leftEyeY) ** 2);
       const dRight = Math.sqrt((mouseX - rightEyeX) ** 2 + (mouseY - rightEyeY) ** 2);
       const minDist = Math.min(dLeft, dRight);
-      const targetLaser = minDist < 128 ? Math.max(0, 1 - minDist / 128) : 0;
+      const targetLaser = minDist < 256 ? Math.max(0, 1 - minDist / 256) : 0;
       laserIntensity += (targetLaser - laserIntensity) * 0.08;
 
       // --- Blob body ---
