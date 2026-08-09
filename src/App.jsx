@@ -1,6 +1,7 @@
 import KimiBlob from './components/KimiBlob';
 import LaserOctocat from './components/LaserOctocat';
 import ClaudeNeonStarfish from './components/ClaudeNeonStarfish';
+import ChatGPTLogo from './components/ChatGPTLogo';
 
 export default function App() {
   return (
@@ -53,8 +54,11 @@ export default function App() {
         <KimiBlob canvasSize={256} displaySize="min(40vw, 35vh)" autoAim={true} />
       </div>
 
-      {/* Neon Starfish: top-right corner */}
+      {/* Neon Starfish: top-center, slightly right */}
       <ClaudeNeonStarfish />
+
+      {/* ChatGPT-Logo: centered below starfish */}
+      <ChatGPTLogo size={200} />
     </div>
   );
 }
