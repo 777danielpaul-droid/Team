@@ -2,6 +2,7 @@ import KimiBlob from './components/KimiBlob';
 import LaserOctocat from './components/LaserOctocat';
 import ClaudeNeonStarfish from './components/ClaudeNeonStarfish';
 import ChatGPTLogo from './components/ChatGPTLogo';
+import GeminiLogo from './components/GeminiLogo';
 
 export default function App() {
   return (
@@ -59,6 +60,9 @@ export default function App() {
 
       {/* ChatGPT-Logo: centered below starfish */}
       <ChatGPTLogo size={200} />
+
+      {/* Gemini-Logo: centered below ChatGPT */}
+      <GeminiLogo size={51} />
     </div>
   );
 }
