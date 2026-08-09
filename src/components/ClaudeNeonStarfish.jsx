@@ -7,22 +7,20 @@ export default function ClaudeNeonStarfish() {
         @keyframes neonPulseStar {
           0%, 100% {
             transform: scale(1);
-            filter: drop-shadow(0 0 8px #FF6B00) drop-shadow(0 0 18px #FF6B00) drop-shadow(0 0 40px #FF4500);
-            opacity: 1;
+            filter: drop-shadow(0 0 4px #FF8C00) drop-shadow(0 0 8px #FF6B00) drop-shadow(0 0 16px #FF4500);
+            opacity: 0.85;
           }
           50% {
-            transform: scale(1.05);
-            filter: drop-shadow(0 0 12px #FF8C00) drop-shadow(0 0 30px #FF6B00) drop-shadow(0 0 60px #FF4500);
-            opacity: 0.88;
+            transform: scale(1.02);
+            filter: drop-shadow(0 0 6px #FFA726) drop-shadow(0 0 12px #FF9800) drop-shadow(0 0 24px #FF5722);
+            opacity: 0.95;
           }
         }
         @keyframes neonBlinkStar {
-          0%, 100% { opacity: 1; }
-          45% { opacity: 1; }
-          50% { opacity: 0.2; }
-          55% { opacity: 1; }
-          90% { opacity: 1; }
-          95% { opacity: 0.3; }
+          0%, 100% { opacity: 0.85; }
+          12% { opacity: 0.95; }
+          50% { opacity: 0.7; }
+          88% { opacity: 0.95; }
         }
         .starfish-wrapper {
           animation: neonPulseStar 2.2s ease-in-out infinite, neonBlinkStar 3.5s ease-in-out infinite;
