@@ -1,51 +1,40 @@
+/* ====================
+   LaserOctocat — komplett ohne Wrapper-Div (Octocat direkt in App rendern)
+   ==================== */
+
+/* Positionierung: direkt oben-links, kompakt (ersetzt ehemaligen .octocat-corner Wrapper) */
 .laser-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  width: 100px;
+  height: 100px;
   background-color: transparent;
-  overflow: hidden;
+  overflow: visible;
   cursor: crosshair;
 }
 
-/* Compact corner variant: constrains container, cat scales down */
-.octocat-corner .laser-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.octocat-corner .laser-overlay {
+.laser-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 9;
   overflow: visible;
 }
 
-.octocat-corner .cat-svg {
-  width: 128px;
-  height: 128px;
-}
-
-.cat-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition: transform 0.3s ease;
-}
-
-.cat-wrapper.near {
-  transform: translate(-50%, -50%) scale(1.12);
-}
-
 .cat-svg {
-  width: 160px;
-  height: 160px;
   display: block;
+  width: 100px;
+  height: 100px;
+}
+
+/* cat-wrapper ist GONE — .cat-svg ist direkt im laser-container */
+.cat-wrapper {
+  display: none; /* legacy — no longer used */
 }
 
 .eye-group {
@@ -56,17 +45,6 @@
 .eye-group.on {
   opacity: 1;
   animation: kiki-eye-pulse 2.2s ease-in-out infinite;
-}
-
-.laser-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 9999;
-  overflow: visible;
 }
 
 .laser-beam {

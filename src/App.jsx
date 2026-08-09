@@ -20,7 +20,7 @@ export default function App() {
 
       {/* Globale Styles: lila Icon-Tönung + Mond-Glow */}
       <style>{`
-        /* Mondlicht-Glow nur auf das cat-SVG-Symbol, NICHT auf die Laser */
+        /* Mondlicht-Glow nur auf das cat-SVG-Symbol */
         .cat-svg.moonlit {
           filter: sepia(0.9) hue-rotate(225deg) saturate(2.5) brightness(1.1)
                   drop-shadow(0 0 30px #e0b0ff)
@@ -28,7 +28,7 @@ export default function App() {
           animation: moonGlow 4.2s ease-in-out infinite;
         }
 
-        /* Lila-Tönung für den Sternstern */
+        /* Lila-Tönung für Sternstern */
         .starfish-wrapper {
           filter: sepia(0.9) hue-rotate(225deg) saturate(2.5) brightness(1.1);
         }
@@ -47,10 +47,8 @@ export default function App() {
         }
       `}</style>
 
-      {/* LaserOctocat: top-left corner */}
-      <div className="fixed top-4 left-4 z-10 w-64 h-48 octocat-corner">
-        <LaserOctocat />
-      </div>
+      {/* LaserOctocat: top-left, kein wrapper — laser-container hat fixed Position selbst */}
+      <LaserOctocat />
 
       {/* KI-Blob: bottom-right area */}
       <div className="fixed bottom-8 right-8 z-20 flex items-end justify-center">
