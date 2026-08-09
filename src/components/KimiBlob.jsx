@@ -402,8 +402,8 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
           />
         </div>
       </div>
-      {/* Laser overlay — fixed to viewport, outside transform containers */}
-      <div ref={laserRef} className="fixed inset-0 pointer-events-none" style={{ overflow: 'visible' }} />
+      {/* Laser overlay — fixed to viewport, outside transform containers. z=8888: über Icons, unter Octokat(9999) */}
+      <div ref={laserRef} className="fixed inset-0 pointer-events-none" style={{ overflow: 'visible', zIndex: 8888 }} />
     </>
   );
 }
