@@ -133,7 +133,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       if (alpha <= 0.01) {
         laser.innerHTML = '';
       } else {
-        const flicker = 0.75 + Math.random() * 0.25;
+        const flicker = 0.88 + Math.random() * 0.12;
         const a = alpha * flicker;
 
         // Live DOM measurement — works for ANY displaySize (string or number)
