@@ -13,7 +13,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
     const ballWrap = ballWrapRef.current;
     const laser = laserRef.current;
 
-    let mouseX = canvasSize / 2, mouseY = canvasSize / 2;
+    let mouseX = 8, mouseY = 127;
     let ballX = 0, ballY = 0;
     let velX = 0, velY = 0;
     let time = 0;
@@ -22,15 +22,18 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
     let blinkProgress = 0;
     let laserIntensity = 0;
     let rafId;
+    let lastMouseMove = Date.now();
 
     const handleMouseMove = (e) => {
       const r = canvas.getBoundingClientRect();
       mouseX = (e.clientX - r.left) / (r.width / canvasSize);
       mouseY = (e.clientY - r.top) / (r.height / canvasSize);
+      lastMouseMove = Date.now();
     };
     const handleMouseLeave = () => {
-      mouseX = canvasSize / 2;
-      mouseY = canvasSize / 2;
+      mouseX = 8;
+      mouseY = 127;
+      laserIntensity = 0; // Force laser off when mouse leaves
     };
 
     wrap.addEventListener('mousemove', handleMouseMove);
@@ -88,8 +91,15 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       const dLeft = Math.sqrt((mouseX - leftEyeX) ** 2 + (mouseY - leftEyeY) ** 2);
       const dRight = Math.sqrt((mouseX - rightEyeX) ** 2 + (mouseY - rightEyeY) ** 2);
       const minDist = Math.min(dLeft, dRight);
-      const targetLaser = minDist < 128 ? Math.max(0, 1 - minDist / 128) : 0;
-      laserIntensity += (targetLaser - laserIntensity) * 0.08;
+
+      // Inaktivitäts-Reset: Wenn die Maus > 150ms nicht bewegt wurde,
+      // schalten die Laser automatisch aus — verhindert "dauerfeuer"
+      const now = Date.now();
+      const inactive = now - lastMouseMove > 150;
+      const targetLaser = (minDist < 64 && !inactive)
+        ? Math.max(0, 1 - minDist / 64)
+        : 0;
+      laserIntensity += (targetLaser - laserIntensity) * 0.1;
 
       // --- Blob body ---
       const innerGlow = ctx.createRadialGradient(64, 56, 0, 64, 62, 42);
@@ -286,12 +296,12 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         createHalo(endRX, endRY);
       }
 
-      rafId = requestAnimationFrame(draw);
+      rafId = setTimeout(draw, 16); // ~60fps — tickt auch im Hintergrund-Tab
     }
 
     draw();
     return () => {
-      cancelAnimationFrame(rafId);
+      clearTimeout(rafId);
       wrap.removeEventListener('mousemove', handleMouseMove);
       wrap.removeEventListener('mouseleave', handleMouseLeave);
     };
