@@ -2,7 +2,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-color: #000000;
+  background-color: transparent;
   overflow: hidden;
   cursor: crosshair;
 }
@@ -72,7 +72,7 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  color: #555;
+  color: #aaa;
   font-size: 13px;
   font-family: monospace;
   pointer-events: none;
