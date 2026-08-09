@@ -2,7 +2,7 @@ import React from 'react';
 
 const GeminiLogo = ({ size = 36 }) => {
   return (
-    <div className="fixed left-[calc(50%-160px)] top-[calc(50%-105px)] z-10 pointer-events-none" style={{ transform: 'translate(-50%, -50%)' }}>
+    <div className="fixed z-10 pointer-events-none" style={{ left: 'calc(50% + 102px)', top: 'calc(50% - 105px)', transform: 'translateY(-50%)' }}>
       <style>{`
         @keyframes soft-pulse {
           0%, 100% { filter: drop-shadow(0 0 18px rgba(139,92,246,0.35)) drop-shadow(0 0 40px rgba(59,130,246,0.2)); opacity: 0.88; }

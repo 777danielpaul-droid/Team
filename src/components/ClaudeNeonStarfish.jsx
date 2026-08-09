@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ClaudeNeonStarfish() {
   return (
-    <div className="fixed top-2 left-1/2 z-10 pointer-events-none" style={{ transform: 'translateX(calc(-50% + 65px))' }}>
+    <div className="fixed top-2 left-1/2 z-10 pointer-events-none" style={{ transform: 'translateX(calc(-50% + 305px))' }}>
       <style>{`
         @keyframes neonPulseStar {
           0%, 100% {

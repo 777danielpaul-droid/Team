@@ -12,7 +12,7 @@ export default function App() {
         className="absolute inset-0 bg-no-repeat opacity-15"
         style={{
           backgroundImage: "url('/hermi.png')",
-          backgroundPosition: "center",
+          backgroundPosition: "calc(50% + 240px) 50%",
           backgroundSize: "65%",
           filter: "sepia(0.8) hue-rotate(225deg) saturate(3) brightness(0.6) contrast(1.2)"
         }}
