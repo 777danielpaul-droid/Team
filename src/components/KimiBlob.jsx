@@ -40,17 +40,6 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         : 0;
       laserIntensity = targetLaser;
       renderLasers(); // render immediately — don't wait for rAF which may be throttled
-
-      // --- COOP: 2-Sekunden-Timer für Octokat-Trigger ---
-      const now = performance.now();
-      if (targetLaser > 0.05) {
-        if (laserActiveSince === null) laserActiveSince = now;
-        const elapsed = now - laserActiveSince;
-        if (elapsed >= 2000 && blobLaserCallback) blobLaserCallback(true); // >2s → Octokat start
-      } else {
-        laserActiveSince = null;
-        if (blobLaserCallback) blobLaserCallback(false); // laser off → Octokat stop
-      }
     };
 
     const handleMouseLeave = () => {
@@ -321,6 +310,19 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       ctx.beginPath();
       ctx.ellipse(92, 66, 7, 4, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      // --- COOP: 2-Sekunden-Timer für Octokat-Trigger (in draw() = konstant 60fps) ---
+      // Laser-Intensity ist bereits aktuell (handleMouseMove + idle-Fade setzen sie)
+      if (laserIntensity > 0.05) {
+        if (laserActiveSince === null) laserActiveSince = performance.now();
+        const elapsed = performance.now() - laserActiveSince;
+        if (elapsed >= 2000 && blobLaserCallback) blobLaserCallback(true); // >2s → Octokat start
+      } else if (laserActiveSince !== null) {
+        // Laser gerade ausgegangen — erst nach kurzer Verzögerung zurücksetzen
+        const elapsed = performance.now() - laserActiveSince;
+        if (elapsed < 1800 && blobLaserCallback) blobLaserCallback(false); // <2s → nie ausgelöst, aber stopp
+        laserActiveSince = null;
+      }
 
       // Re-render lasers for idle-fade-out even when rAF ticks
       renderLasers();

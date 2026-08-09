@@ -41,18 +41,26 @@ const LaserOctocat = () => {
     window.addEventListener('mousemove', handleMouseMove);
 
     // --- COOP TRIGGER: Octokat shootet nur wenn Blob-Laser >2s aktiv ---
-    // Verwende window.__blobLaserActive statt THRESHOLD-Proximity-Trigger
-    const blobCb = window.__blobLaserActive;
-    if (typeof blobCb === 'function') {
-      blobCb((active) => setIsNear(active));
-    }
+    // window.__blobLaserActive wird von KimiBlob.jsx expost — aber async (nach dem Render).
+    // Polling bis es bereit ist (max 2s timeout).
+    let pollAttempts = 0;
+    const maxPolls = 100; // max ~2s bei 20ms-Intervall
+
+    const pollAndSubscribe = () => {
+      const blobCb = window.__blobLaserActive;
+      if (typeof blobCb === 'function') {
+        blobCb((active) => setIsNear(active)); // registriere callback
+      } else if (pollAttempts < maxPolls) {
+        pollAttempts++;
+        setTimeout(pollAndSubscribe, 20); // retry in 20ms
+      } else {
+        console.warn('[LaserOctocat] window.__blobLaserActive not available after 2s — Coop-Trigger fallback: none');
+      }
+    };
+    pollAndSubscribe();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      // cleanup: entferne callback, falls window-object cleanup nötig
-      if (typeof window.__blobLaserActive === 'object' && window.__blobLaserActive !== null) {
-        window.__blobLaserActive = null;
-      }
     };
   }, [handleMouseMove]);
 
