@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './LaserOctocat.css';
 
-const THRESHOLD = 220;
+const THRESHOLD = 440;
 const PURPLE = '#a855f7';
 const PURPLE_GLOW = '#7c3aed';
 const PURPLE_BEAM = '#c084fc';
