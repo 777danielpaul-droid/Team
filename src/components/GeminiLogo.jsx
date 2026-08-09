@@ -1,8 +1,8 @@
 import React from 'react';
 
-const GeminiLogo = ({ size = 51 }) => {
+const GeminiLogo = ({ size = 36 }) => {
   return (
-    <div className="fixed left-[calc(50%-160px)] top-[calc(50%-95px)] z-10 pointer-events-none" style={{ transform: 'translate(-50%, -50%)' }}>
+    <div className="fixed left-[calc(50%-160px)] top-[calc(50%-105px)] z-10 pointer-events-none" style={{ transform: 'translate(-50%, -50%)' }}>
       <style>{`
         @keyframes soft-pulse {
           0%, 100% { filter: drop-shadow(0 0 18px rgba(139,92,246,0.35)) drop-shadow(0 0 40px rgba(59,130,246,0.2)); opacity: 0.88; }
@@ -14,11 +14,15 @@ const GeminiLogo = ({ size = 51 }) => {
           30% { opacity: 0; transform: scale(0.3); }
           100% { opacity: 0; transform: scale(0.3); }
         }
+        @keyframes ghostPulse30Fast {
+          0%, 100% { opacity: 0; }
+          50%      { opacity: 0.3; }
+        }
         .gemini-wrap {
           position: relative;
           width: ${size}px;
           height: ${size}px;
-          animation: soft-pulse 4s ease-in-out infinite;
+          animation: ghostPulse30Fast 1.5s ease-in-out infinite;
         }
         .gemini-wrap svg {
           width: 100%;
@@ -47,13 +51,9 @@ const GeminiLogo = ({ size = 51 }) => {
         }
         .flash-star::before { width: 100%; height: 20%; top: 40%; left: 0; }
         .flash-star::after { width: 20%; height: 100%; top: 0; left: 40%; }
-        @keyframes ghostPulse {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.85; }
-        }
       `}</style>
 
-      <div className="gemini-wrap" style={{ animation: 'ghostPulse 3.2s ease-in-out infinite' }}>
+      <div className="gemini-wrap">
         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="lbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
