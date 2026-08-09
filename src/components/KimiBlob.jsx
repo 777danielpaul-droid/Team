@@ -66,7 +66,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         return;
       }
 
-      const flicker = 0.88 + Math.random() * 0.12;
+      const flicker = 0.94 + Math.random() * 0.08;
       const a = alpha * flicker;
 
       // Live DOM measurement — works for ANY displaySize (string or number)
@@ -113,7 +113,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         glow.style.borderRadius = '50%';
         glow.style.background = `radial-gradient(ellipse at center, rgba(2, 136, 209, ${a * 0.55}) 0%, transparent 70%)`;
         glow.style.filter = 'blur(5px) saturate(1.5)';
-        glow.style.animation = 'kiki-beam-glow-pulse 1.7s ease-in-out infinite';
+        glow.style.animation = 'kiki-beam-glow-pulse 2.6s ease-in-out infinite';
         glow.style.pointerEvents = 'none';
         laser.appendChild(glow);
 
@@ -135,7 +135,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
           0 0 16px 6px rgba(2, 229, 255, ${a * 0.45}),
           0 0 28px 10px rgba(2, 136, 209, ${a * 0.25})
         `;
-        beam.style.animation = 'kiki-beam-core-pulse 1.3s ease-in-out infinite';
+        beam.style.animation = 'kiki-beam-core-pulse 2.1s ease-in-out infinite';
         beam.style.pointerEvents = 'none';
         laser.appendChild(beam);
       };
@@ -155,7 +155,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         f.style.borderRadius = '50%';
         f.style.transform = 'translate(-50%, -50%)';
         f.style.boxShadow = `0 0 8px 2px rgba(0, 229, 255, ${a * 0.8})`;
-        f.style.animation = 'kiki-impact-flash 2s ease-out infinite';
+        f.style.animation = 'kiki-impact-flash 2.5s ease-out infinite';
         f.style.pointerEvents = 'none';
         laser.appendChild(f);
       };
@@ -176,7 +176,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
           f.style.borderRadius = '50%';
           f.style.transform = 'translate(-50%, -50%)';
           f.style.boxShadow = `0 0 ${sz * 2}px ${sz}px rgba(79, 195, 247, ${a * bloomOp})`;
-          f.style.animation = `kiki-flare ${1.5 + Math.random() * 0.5}s ease-out infinite`;
+          f.style.animation = `kiki-flare ${2.2 + Math.random() * 0.6}s ease-out infinite`;
           f.style.pointerEvents = 'none';
           laser.appendChild(f);
         };
@@ -196,7 +196,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         f.style.borderRadius = '50%';
         f.style.transform = 'translate(-50%, -50%)';
         f.style.boxShadow = `0 0 30px 12px rgba(2, 229, 255, ${a * 0.08})`;
-        f.style.animation = 'kiki-impact-halo 2.5s ease-out infinite';
+        f.style.animation = 'kiki-impact-halo 3.2s ease-out infinite';
         f.style.pointerEvents = 'none';
         laser.appendChild(f);
       };
@@ -316,13 +316,17 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         }
 
         @keyframes kiki-beam-core-pulse {
-          0%, 100% { opacity: 0.9; }
+          0%, 100% { opacity: 0.82; }
+          3% { opacity: 0.95; }
           50% { opacity: 1; }
+          97% { opacity: 0.9; }
         }
 
         @keyframes kiki-beam-glow-pulse {
-          0%, 100% { opacity: 0.5; filter: blur(5px) saturate(1); }
-          50% { opacity: 0.7; filter: blur(8px) saturate(1.3); }
+          0%, 100% { opacity: 0.45; filter: blur(4px) saturate(1); }
+          3% { opacity: 0.65; filter: blur(6px) saturate(1.2); }
+          50% { opacity: 0.8; filter: blur(7px) saturate(1.4); }
+          97% { opacity: 0.55; filter: blur(5px) saturate(1.1); }
         }
 
         @keyframes kiki-impact-flash {
