@@ -89,22 +89,6 @@
   animation: kiki-core-draw 0.6s ease-out 0.1s forwards, kiki-core-pulse 1.3s ease-in-out infinite;
 }
 
-.hint {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #aaa;
-  font-size: 13px;
-  font-family: monospace;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-
-.hint.hidden {
-  opacity: 0;
-}
-
 @keyframes kiki-beam-pulse {
   0%, 100% {
     stroke: #c084fc;

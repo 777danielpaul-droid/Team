@@ -123,10 +123,6 @@ const LaserOctocat = () => {
           </>
         )}
       </svg>
-
-      <div className={`hint ${isNear ? 'hidden' : ''}`}>
-        Bewege den Cursor in die Nähe der Katze
-      </div>
     </div>
   );
 };
