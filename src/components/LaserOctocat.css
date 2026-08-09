@@ -22,7 +22,7 @@
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 9;
+  z-index: 9999; /* GANZ VORNE — über allen Icons */
   overflow: visible;
 }
 
