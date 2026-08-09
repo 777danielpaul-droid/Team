@@ -8,8 +8,8 @@
   top: 16px;
   left: 16px;
   z-index: 10;
-  width: 100px;
-  height: 100px;
+  width: 134px;
+  height: 134px;
   background-color: transparent;
   overflow: visible;
   cursor: crosshair;
@@ -28,8 +28,8 @@
 
 .cat-svg {
   display: block;
-  width: 100px;
-  height: 100px;
+  width: 134px;
+  height: 134px;
 }
 
 /* cat-wrapper ist GONE — .cat-svg ist direkt im laser-container */
