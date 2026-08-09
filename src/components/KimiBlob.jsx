@@ -13,7 +13,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
     const ballWrap = ballWrapRef.current;
     const laser = laserRef.current;
 
-    let mouseX = -50, mouseY = -50; // far outside canvas — safe default, lasers OFF
+    let mouseX = -64, mouseY = -64; // far outside canvas (128x128) — lasers OFF by default
     let ballX = 0, ballY = 0;
     let velX = 0, velY = 0;
     let time = 0;
@@ -29,16 +29,182 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       mouseX = (e.clientX - r.left) / (r.width / canvasSize);
       mouseY = (e.clientY - r.top) / (r.height / canvasSize);
       lastMouseMove = Date.now();
-    };
-    const handleMouseLeave = () => {
-      mouseX = -50;
-      mouseY = -50;
-      laserIntensity = 0; // Force laser off when mouse leaves
+
+      // Update laser intensity IMMEDIATELY on mousemove (no timer dependency)
+      const dLeft = Math.sqrt((mouseX - 48) ** 2 + (mouseY - 56) ** 2);
+      const dRight = Math.sqrt((mouseX - 80) ** 2 + (mouseY - 56) ** 2);
+      const minDist = Math.min(dLeft, dRight);
+      const targetLaser = minDist < 128
+        ? Math.max(0, 1 - minDist / 128)
+        : 0;
+      laserIntensity = targetLaser;
+      renderLasers(); // render immediately — don't wait for rAF which may be throttled
     };
 
-    wrap.addEventListener('mousemove', handleMouseMove);
+    const handleMouseLeave = () => {
+      mouseX = -64;
+      mouseY = -64;
+      laserIntensity = 0; // Force laser off when mouse leaves
+      renderLasers();
+    };
+
+    // window mousemove: fires everywhere, even when cursor is outside wrap bounds
+    // wrap mouseleave: fires when cursor leaves the blob's interaction area
+    window.addEventListener('mousemove', handleMouseMove);
     wrap.addEventListener('mouseleave', handleMouseLeave);
 
+    // --- Laser DOM renderer (called directly on mousemove + idle, no rAF needed) ---
+    function renderLasers() {
+      // Idle-reset: if mouse has been still for >150ms, decay laser intensity
+      const now = Date.now();
+      const inactive = now - lastMouseMove > 150;
+      if (inactive) laserIntensity *= 0.85;
+
+      const alpha = laserIntensity > 0.01 ? laserIntensity : 0;
+      if (alpha <= 0.01) {
+        laser.innerHTML = '';
+        return;
+      }
+
+      const flicker = 0.88 + Math.random() * 0.12;
+      const a = alpha * flicker;
+
+      // Live DOM measurement — works for ANY displaySize (string or number)
+      const canvasRect = canvas.getBoundingClientRect();
+      const cssScale = canvasRect.width / canvasSize;
+
+      // Eye positions in VIEWPORT space (laser overlay is position:fixed)
+      const eyeLX = canvasRect.left + 48 * cssScale;
+      const eyeLY = canvasRect.top + 56 * cssScale;
+      const eyeRX = canvasRect.left + 80 * cssScale;
+      const eyeRY = canvasRect.top + 56 * cssScale;
+
+      // Mouse in VIEWPORT space
+      const mouseWrapX = mouseX * cssScale + canvasRect.left;
+      const mouseWrapY = mouseY * cssScale + canvasRect.top;
+
+      // Beam vectors & lengths to mouse
+      const angleL = Math.atan2(mouseWrapY - eyeLY, mouseWrapX - eyeLX);
+      const lenL = Math.hypot(mouseWrapX - eyeLX, mouseWrapY - eyeLY);
+      const angleR = Math.atan2(mouseWrapY - eyeRY, mouseWrapX - eyeRX);
+      const lenR = Math.hypot(mouseWrapX - eyeRX, mouseWrapY - eyeRY);
+
+      // Laser beams extend to the cursor AND beyond — spanning the full screen
+      const maxLen = Math.hypot(window.innerWidth, window.innerHeight) * 0.9;
+      const endLX = eyeLX + Math.cos(angleL) * Math.max(lenL, maxLen);
+      const endLY = eyeLY + Math.sin(angleL) * Math.max(lenL, maxLen);
+      const endRX = eyeRX + Math.cos(angleR) * Math.max(lenR, maxLen);
+      const endRY = eyeRY + Math.sin(angleR) * Math.max(lenR, maxLen);
+
+      laser.innerHTML = '';
+
+      const createBeam = (eyeX, eyeY, endX, endY, angle) => {
+        const beamLen = Math.hypot(endX - eyeX, endY - eyeY);
+
+        // --- Layer 1: Soft volumetric glow (atmospheric scatter) ---
+        const glow = document.createElement('div');
+        glow.style.position = 'absolute';
+        glow.style.left = `${eyeX}px`;
+        glow.style.top = `${eyeY}px`;
+        glow.style.width = `${Math.max(beamLen, 1)}px`;
+        glow.style.height = '30px';
+        glow.style.transformOrigin = '0 50%';
+        glow.style.transform = `rotate(${angle}rad)`;
+        glow.style.borderRadius = '50%';
+        glow.style.background = `radial-gradient(ellipse at center, rgba(2, 136, 209, ${a * 0.55}) 0%, transparent 70%)`;
+        glow.style.filter = 'blur(5px) saturate(1.5)';
+        glow.style.animation = 'kiki-beam-glow-pulse 1.7s ease-in-out infinite';
+        glow.style.pointerEvents = 'none';
+        laser.appendChild(glow);
+
+        // --- Layer 2: Sharp core beam (white-hot → cyan → deep blue) ---
+        const beam = document.createElement('div');
+        beam.style.position = 'absolute';
+        beam.style.left = `${eyeX}px`;
+        beam.style.top = `${eyeY}px`;
+        beam.style.width = `${Math.max(beamLen, 1)}px`;
+        beam.style.height = '8px';
+        beam.style.transformOrigin = '0 50%';
+        beam.style.transform = `rotate(${angle}rad)`;
+        beam.style.borderRadius = '4px';
+        beam.style.background = 'linear-gradient(90deg, #ffffff 0%, #00e5ff 35%, #4fc3f7 65%, #0288d1 100%)';
+        beam.style.boxShadow = `
+          0 0 2px 1px rgba(255, 255, 255, ${a * 0.95}),
+          0 0 4px 2px rgba(255, 229, 255, ${a * 0.8}),
+          0 0 8px 3px rgba(79, 195, 247, ${a * 0.7}),
+          0 0 16px 6px rgba(2, 229, 255, ${a * 0.45}),
+          0 0 28px 10px rgba(2, 136, 209, ${a * 0.25})
+        `;
+        beam.style.animation = 'kiki-beam-core-pulse 1.3s ease-in-out infinite';
+        beam.style.pointerEvents = 'none';
+        laser.appendChild(beam);
+      };
+
+      createBeam(eyeLX, eyeLY, endLX, endLY, angleL);
+      createBeam(eyeRX, eyeRY, endRX, endRY, angleR);
+
+      // --- Impact effects ---
+      const createImpactFlash = (x, y) => {
+        const f = document.createElement('div');
+        f.style.position = 'absolute';
+        f.style.left = `${x}px`;
+        f.style.top = `${y}px`;
+        f.style.width = '14px';
+        f.style.height = '14px';
+        f.style.background = `rgba(255, 255, 255, ${a * 0.9})`;
+        f.style.borderRadius = '50%';
+        f.style.transform = 'translate(-50%, -50%)';
+        f.style.boxShadow = `0 0 8px 2px rgba(0, 229, 255, ${a * 0.8})`;
+        f.style.animation = 'kiki-impact-flash 2s ease-out infinite';
+        f.style.pointerEvents = 'none';
+        laser.appendChild(f);
+      };
+      createImpactFlash(endLX, endLY);
+      createImpactFlash(endRX, endRY);
+
+      // Concentric rings — pulsing outward with bloom (cyan-blue)
+      const flares = [[34, 0.55, 0.9], [24, 0.4, 0.82], [16, 0.6, 0.75], [10, 0.75, 0.95]];
+      for (const [sz, coreOp, bloomOp] of flares) {
+        const createFlare = (x, y) => {
+          const f = document.createElement('div');
+          f.style.position = 'absolute';
+          f.style.left = `${x}px`;
+          f.style.top = `${y}px`;
+          f.style.width = `${sz}px`;
+          f.style.height = `${sz}px`;
+          f.style.background = `rgba(2, 136, 209, ${a * coreOp})`;
+          f.style.borderRadius = '50%';
+          f.style.transform = 'translate(-50%, -50%)';
+          f.style.boxShadow = `0 0 ${sz * 2}px ${sz}px rgba(79, 195, 247, ${a * bloomOp})`;
+          f.style.animation = `kiki-flare ${1.5 + Math.random() * 0.5}s ease-out infinite`;
+          f.style.pointerEvents = 'none';
+          laser.appendChild(f);
+        };
+        createFlare(endLX, endLY);
+        createFlare(endRX, endRY);
+      }
+
+      // Distant impact halo
+      const createHalo = (x, y) => {
+        const f = document.createElement('div');
+        f.style.position = 'absolute';
+        f.style.left = `${x}px`;
+        f.style.top = `${y}px`;
+        f.style.width = '60px';
+        f.style.height = '60px';
+        f.style.background = `rgba(2, 136, 209, ${a * 0.15})`;
+        f.style.borderRadius = '50%';
+        f.style.transform = 'translate(-50%, -50%)';
+        f.style.boxShadow = `0 0 30px 12px rgba(2, 229, 255, ${a * 0.08})`;
+        f.style.animation = 'kiki-impact-halo 2.5s ease-out infinite';
+        f.style.pointerEvents = 'none';
+        laser.appendChild(f);
+      };
+      createHalo(endLX, endLY);
+      createHalo(endRX, endRY);
+    }
+
+    // --- Canvas animation (blob body + ball) via requestAnimationFrame ---
     function draw() {
       time += 0.025;
 
@@ -65,7 +231,6 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       velX *= 0.92; velY *= 0.92;
       ballX += velX; ballY += velY;
 
-      // Float animation — ballWrap floats gently (also read live for laser alignment)
       const floatX = Math.sin(time) * 2;
       const floatY = Math.cos(time * 0.6) * 2.5;
       ballWrap.style.transform = `translate(${ballX + floatX}px, ${ballY + floatY}px)`;
@@ -87,19 +252,6 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       const leftEyeY = 56 + lookY;
       const rightEyeX = 80 + lookX;
       const rightEyeY = 56 + lookY;
-
-      const dLeft = Math.sqrt((mouseX - leftEyeX) ** 2 + (mouseY - leftEyeY) ** 2);
-      const dRight = Math.sqrt((mouseX - rightEyeX) ** 2 + (mouseY - rightEyeY) ** 2);
-      const minDist = Math.min(dLeft, dRight);
-
-      // Inaktivitäts-Reset: Wenn die Maus > 150ms nicht bewegt wurde,
-      // schalten die Laser automatisch aus — verhindert "dauerfeuer"
-      const now = Date.now();
-      const inactive = now - lastMouseMove > 150;
-      const targetLaser = (minDist < 128 && !inactive)
-        ? Math.max(0, 1 - minDist / 128)
-        : 0;
-      laserIntensity += (targetLaser - laserIntensity) * 0.1;
 
       // --- Blob body ---
       const innerGlow = ctx.createRadialGradient(64, 56, 0, 64, 62, 42);
@@ -138,170 +290,18 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       ctx.ellipse(92, 66, 7, 4, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // --- Laser: DOM-based beams (separate overlay, no canvas clip) ---
-      const alpha = laserIntensity > 0.01 ? laserIntensity : 0;
-      if (alpha <= 0.01) {
-        laser.innerHTML = '';
-      } else {
-        const flicker = 0.88 + Math.random() * 0.12;
-        const a = alpha * flicker;
+      // Re-render lasers for idle-fade-out even when rAF ticks
+      renderLasers();
 
-        // Live DOM measurement — works for ANY displaySize (string or number)
-        const canvasRect = canvas.getBoundingClientRect();
-        const wrapRect = wrap.getBoundingClientRect(); // eslint-disable-line @typescript-eslint/no-unused-vars
-        const cssScale = canvasRect.width / canvasSize; // actual rendered scale
-
-        // Eye positions in VIEWPORT space (laser overlay is position:fixed)
-        const eyeLX = canvasRect.left + leftEyeX * cssScale;
-        const eyeLY = canvasRect.top + leftEyeY * cssScale;
-        const eyeRX = canvasRect.left + rightEyeX * cssScale;
-        const eyeRY = canvasRect.top + rightEyeY * cssScale;
-
-        // Mouse in VIEWPORT space
-        const mouseWrapX = mouseX * cssScale + canvasRect.left;
-        const mouseWrapY = mouseY * cssScale + canvasRect.top;
-
-        // Beam vectors & lengths to mouse
-        const angleL = Math.atan2(mouseWrapY - eyeLY, mouseWrapX - eyeLX);
-        const lenL = Math.hypot(mouseWrapX - eyeLX, mouseWrapY - eyeLY);
-        const angleR = Math.atan2(mouseWrapY - eyeRY, mouseWrapX - eyeRX);
-        const lenR = Math.hypot(mouseWrapX - eyeRX, mouseWrapY - eyeRY);
-
-        // Laser beams extend to the cursor AND beyond — spanning the full screen
-        const maxLen = Math.hypot(window.innerWidth, window.innerHeight) * 0.9;
-        const endLX = eyeLX + Math.cos(angleL) * Math.max(lenL, maxLen);
-        const endLY = eyeLY + Math.sin(angleL) * Math.max(lenL, maxLen);
-        const endRX = eyeRX + Math.cos(angleR) * Math.max(lenR, maxLen);
-        const endRY = eyeRY + Math.sin(angleR) * Math.max(lenR, maxLen);
-
-        laser.innerHTML = '';
-
-        /**
-         * Laser-Cannon beam: two DOM layers per eye.
-         *
-         * Layer 1: Soft volumetric glow — wide, blurred, cyan-blue backdrop
-         *          that simulates atmospheric scattering around the beam.
-         * Layer 2: Sharp core beam — white-hot → cyan → deep blue gradient
-         *          with a dense multi-ring bloom shadow.
-         *
-         * Each layer has its own CSS animation for independent pulsing,
-         * giving the laser a living, energetic feel.
-         */
-        const createBeam = (eyeX, eyeY, endX, endY, angle) => {
-          const beamLen = Math.hypot(endX - eyeX, endY - eyeY);
-
-          // --- Layer 1: Soft volumetric glow (atmospheric scatter) ---
-          const glow = document.createElement('div');
-          glow.style.position = 'absolute';
-          glow.style.left = `${eyeX}px`;
-          glow.style.top = `${eyeY}px`;
-          glow.style.width = `${Math.max(beamLen, 1)}px`;
-          glow.style.height = '30px';
-          glow.style.transformOrigin = '0 50%';
-          glow.style.transform = `rotate(${angle}rad)`;
-          glow.style.borderRadius = '50%';
-          glow.style.background = `radial-gradient(ellipse at center, rgba(2, 136, 209, ${a * 0.55}) 0%, transparent 70%)`;
-          glow.style.filter = 'blur(5px) saturate(1.5)';
-          glow.style.animation = 'kiki-beam-glow-pulse 1.7s ease-in-out infinite';
-          glow.style.pointerEvents = 'none';
-          laser.appendChild(glow);
-
-          // --- Layer 2: Sharp core beam (white-hot → cyan → deep blue) ---
-          const beam = document.createElement('div');
-          beam.style.position = 'absolute';
-          beam.style.left = `${eyeX}px`;
-          beam.style.top = `${eyeY}px`;
-          beam.style.width = `${Math.max(beamLen, 1)}px`;
-          beam.style.height = '8px';
-          beam.style.transformOrigin = '0 50%';
-          beam.style.transform = `rotate(${angle}rad)`;
-          beam.style.borderRadius = '4px';
-          beam.style.background = 'linear-gradient(90deg, #ffffff 0%, #00e5ff 35%, #4fc3f7 65%, #0288d1 100%)';
-          beam.style.boxShadow = `
-            0 0 2px 1px rgba(255, 255, 255, ${a * 0.95}),
-            0 0 4px 2px rgba(255, 229, 255, ${a * 0.8}),
-            0 0 8px 3px rgba(79, 195, 247, ${a * 0.7}),
-            0 0 16px 6px rgba(2, 229, 255, ${a * 0.45}),
-            0 0 28px 10px rgba(2, 136, 209, ${a * 0.25})
-          `;
-          beam.style.animation = 'kiki-beam-core-pulse 1.3s ease-in-out infinite';
-          beam.style.pointerEvents = 'none';
-          laser.appendChild(beam);
-        };
-
-        createBeam(eyeLX, eyeLY, endLX, endLY, angleL);
-        createBeam(eyeRX, eyeRY, endRX, endRY, angleR);
-
-        // --- Impact effects ---
-
-        // Bright core flash — sharp white-cyan burst at the beam impact point
-        const createImpactFlash = (x, y) => {
-          const f = document.createElement('div');
-          f.style.position = 'absolute';
-          f.style.left = `${x}px`;
-          f.style.top = `${y}px`;
-          f.style.width = '14px';
-          f.style.height = '14px';
-          f.style.background = `rgba(255, 255, 255, ${a * 0.9})`;
-          f.style.borderRadius = '50%';
-          f.style.transform = 'translate(-50%, -50%)';
-          f.style.boxShadow = `0 0 8px 2px rgba(0, 229, 255, ${a * 0.8})`;
-          f.style.animation = 'kiki-impact-flash 2s ease-out infinite';
-          f.style.pointerEvents = 'none';
-          laser.appendChild(f);
-        };
-        createImpactFlash(endLX, endLY);
-        createImpactFlash(endRX, endRY);
-
-        // Concentric rings — pulsing outward with bloom (cyan-blue)
-        const flares = [[34, 0.55, 0.9], [24, 0.4, 0.82], [16, 0.6, 0.75], [10, 0.75, 0.95]];
-        for (const [sz, coreOp, bloomOp] of flares) {
-          const createFlare = (x, y) => {
-            const f = document.createElement('div');
-            f.style.position = 'absolute';
-            f.style.left = `${x}px`;
-            f.style.top = `${y}px`;
-            f.style.width = `${sz}px`;
-            f.style.height = `${sz}px`;
-            f.style.background = `rgba(2, 136, 209, ${a * coreOp})`;
-            f.style.borderRadius = '50%';
-            f.style.transform = 'translate(-50%, -50%)';
-            f.style.boxShadow = `0 0 ${sz * 2}px ${sz}px rgba(79, 195, 247, ${a * bloomOp})`;
-            f.style.animation = `kiki-flare ${1.5 + Math.random() * 0.5}s ease-out infinite`;
-            f.style.pointerEvents = 'none';
-            laser.appendChild(f);
-          };
-          createFlare(endLX, endLY);
-          createFlare(endRX, endRY);
-        }
-
-        // Distant impact halo — large, soft, very faint, expanding
-        const createHalo = (x, y) => {
-          const f = document.createElement('div');
-          f.style.position = 'absolute';
-          f.style.left = `${x}px`;
-          f.style.top = `${y}px`;
-          f.style.width = '60px';
-          f.style.height = '60px';
-          f.style.background = `rgba(2, 136, 209, ${a * 0.15})`;
-          f.style.borderRadius = '50%';
-          f.style.transform = 'translate(-50%, -50%)';
-          f.style.boxShadow = `0 0 30px 12px rgba(2, 229, 255, ${a * 0.08})`;
-          f.style.animation = 'kiki-impact-halo 2.5s ease-out infinite';
-          f.style.pointerEvents = 'none';
-          laser.appendChild(f);
-        };
-        createHalo(endLX, endLY);
-        createHalo(endRX, endRY);
-      }
-
-      rafId = setTimeout(draw, 16); // ~60fps — tickt auch im Hintergrund-Tab
+      rafId = requestAnimationFrame(draw);
     }
 
     draw();
+    renderLasers();
+
     return () => {
-      clearTimeout(rafId);
-      wrap.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('mousemove', handleMouseMove);
       wrap.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, [canvasSize, displaySize]);
@@ -342,7 +342,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       `}</style>
       <div
         ref={wrapRef}
-        className="relative flex-center"
+        className="relative"
         style={{
           width: displaySize,
           height: displaySize,
@@ -362,9 +362,9 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
             style={{ width: displaySize, height: displaySize, imageRendering: 'pixelated', overflow: 'visible' }}
           />
         </div>
-        {/* Laser overlay — fixed to viewport so beams span the entire screen */}
-        <div ref={laserRef} className="fixed inset-0 pointer-events-none" style={{ overflow: 'visible' }} />
       </div>
+      {/* Laser overlay — fixed to viewport, outside transform containers */}
+      <div ref={laserRef} className="fixed inset-0 pointer-events-none" style={{ overflow: 'visible' }} />
     </>
   );
 }
