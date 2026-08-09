@@ -96,8 +96,8 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       // schalten die Laser automatisch aus — verhindert "dauerfeuer"
       const now = Date.now();
       const inactive = now - lastMouseMove > 150;
-      const targetLaser = (minDist < 64 && !inactive)
-        ? Math.max(0, 1 - minDist / 64)
+      const targetLaser = (minDist < 128 && !inactive)
+        ? Math.max(0, 1 - minDist / 128)
         : 0;
       laserIntensity += (targetLaser - laserIntensity) * 0.1;
 
