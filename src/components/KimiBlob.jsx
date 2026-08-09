@@ -22,13 +22,11 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
     let blinkProgress = 0;
     let laserIntensity = 0;
     let rafId;
-    let lastMouseMove = Date.now();
 
     const handleMouseMove = (e) => {
       const r = canvas.getBoundingClientRect();
       mouseX = (e.clientX - r.left) / (r.width / canvasSize);
       mouseY = (e.clientY - r.top) / (r.height / canvasSize);
-      lastMouseMove = Date.now();
 
       // Update laser intensity IMMEDIATELY on mousemove (no timer dependency)
       const dLeft = Math.sqrt((mouseX - 48) ** 2 + (mouseY - 56) ** 2);
@@ -53,20 +51,15 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
     window.addEventListener('mousemove', handleMouseMove);
     wrap.addEventListener('mouseleave', handleMouseLeave);
 
-    // --- Laser DOM renderer (called directly on mousemove + idle, no rAF needed) ---
+    // --- Laser DOM renderer (always ticks via rAF + immediate on mousemove) ---
     function renderLasers() {
-      // Idle-reset: if mouse has been still for >150ms, decay laser intensity
-      const now = Date.now();
-      const inactive = now - lastMouseMove > 150;
-      if (inactive) laserIntensity *= 0.85;
-
-      const alpha = laserIntensity > 0.01 ? laserIntensity : 0;
-      if (alpha <= 0.01) {
+      const alpha = laserIntensity > 0.001 ? laserIntensity : 0;
+      if (alpha <= 0.001) {
         laser.innerHTML = '';
         return;
       }
 
-      const flicker = 0.94 + Math.random() * 0.08;
+      const flicker = 0.85 + Math.random() * 0.30; // wider flicker range for vivid blink
       const a = alpha * flicker;
 
       // Live DOM measurement — works for ANY displaySize (string or number)
@@ -113,7 +106,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         glow.style.borderRadius = '50%';
         glow.style.background = `radial-gradient(ellipse at center, rgba(2, 136, 209, ${a * 0.55}) 0%, transparent 70%)`;
         glow.style.filter = 'blur(5px) saturate(1.5)';
-        glow.style.animation = 'kiki-beam-glow-pulse 2.6s ease-in-out infinite';
+        glow.style.animation = 'kiki-beam-glow-pulse 1.9s steps(3, jump-none) infinite';
         glow.style.pointerEvents = 'none';
         laser.appendChild(glow);
 
@@ -129,13 +122,14 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         beam.style.borderRadius = '4px';
         beam.style.background = 'linear-gradient(90deg, #ffffff 0%, #00e5ff 35%, #4fc3f7 65%, #0288d1 100%)';
         beam.style.boxShadow = `
-          0 0 2px 1px rgba(255, 255, 255, ${a * 0.95}),
-          0 0 4px 2px rgba(255, 229, 255, ${a * 0.8}),
-          0 0 8px 3px rgba(79, 195, 247, ${a * 0.7}),
-          0 0 16px 6px rgba(2, 229, 255, ${a * 0.45}),
-          0 0 28px 10px rgba(2, 136, 209, ${a * 0.25})
+          0 0 2px 1px rgba(255, 255, 255, ${a * 1}),
+          0 0 4px 2px rgba(255, 229, 255, ${a * 0.95}),
+          0 0 8px 4px rgba(79, 195, 247, ${a * 0.85}),
+          0 0 16px 8px rgba(2, 229, 255, ${a * 0.7}),
+          0 0 32px 12px rgba(2, 136, 209, ${a * 0.5}),
+          0 0 56px 16px rgba(2, 136, 209, ${a * 0.35})
         `;
-        beam.style.animation = 'kiki-beam-core-pulse 2.1s ease-in-out infinite';
+        beam.style.animation = 'kiki-beam-core-pulse 1.6s steps(4, jump-none) infinite';
         beam.style.pointerEvents = 'none';
         laser.appendChild(beam);
       };
@@ -155,7 +149,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         f.style.borderRadius = '50%';
         f.style.transform = 'translate(-50%, -50%)';
         f.style.boxShadow = `0 0 8px 2px rgba(0, 229, 255, ${a * 0.8})`;
-        f.style.animation = 'kiki-impact-flash 2.5s ease-out infinite';
+        f.style.animation = 'kiki-impact-flash 0.8s steps(2, jump-none) infinite';
         f.style.pointerEvents = 'none';
         laser.appendChild(f);
       };
@@ -176,7 +170,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
           f.style.borderRadius = '50%';
           f.style.transform = 'translate(-50%, -50%)';
           f.style.boxShadow = `0 0 ${sz * 2}px ${sz}px rgba(79, 195, 247, ${a * bloomOp})`;
-          f.style.animation = `kiki-flare ${2.2 + Math.random() * 0.6}s ease-out infinite`;
+          f.style.animation = `kiki-flare ${0.9 + Math.random() * 0.3}s steps(2, jump-none) infinite`;
           f.style.pointerEvents = 'none';
           laser.appendChild(f);
         };
@@ -196,7 +190,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         f.style.borderRadius = '50%';
         f.style.transform = 'translate(-50%, -50%)';
         f.style.boxShadow = `0 0 30px 12px rgba(2, 229, 255, ${a * 0.08})`;
-        f.style.animation = 'kiki-impact-halo 3.2s ease-out infinite';
+        f.style.animation = 'kiki-impact-halo 1.1s steps(3, jump-none) infinite';
         f.style.pointerEvents = 'none';
         laser.appendChild(f);
       };
@@ -316,17 +310,20 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         }
 
         @keyframes kiki-beam-core-pulse {
-          0%, 100% { opacity: 0.82; }
-          3% { opacity: 0.95; }
-          50% { opacity: 1; }
-          97% { opacity: 0.9; }
+          0%, 100% { opacity: 0.2; }
+          1% { opacity: 1; stroke: #ffffff; }
+          2% { opacity: 0.5; }
+          50% { opacity: 0.9; }
+          50.3% { opacity: 0.15; }
+          98% { opacity: 0.8; }
         }
 
         @keyframes kiki-beam-glow-pulse {
-          0%, 100% { opacity: 0.45; filter: blur(4px) saturate(1); }
-          3% { opacity: 0.65; filter: blur(6px) saturate(1.2); }
-          50% { opacity: 0.8; filter: blur(7px) saturate(1.4); }
-          97% { opacity: 0.55; filter: blur(5px) saturate(1.1); }
+          0%, 100% { opacity: 0.3; filter: blur(3px) saturate(1); }
+          1% { opacity: 0.8; filter: blur(4px) saturate(1.3); }
+          50% { opacity: 0.95; filter: blur(6px) saturate(1.5); }
+          50.4% { opacity: 0.2; filter: blur(2px) saturate(0.8); }
+          97% { opacity: 0.5; filter: blur(4px) saturate(1.1); }
         }
 
         @keyframes kiki-impact-flash {
