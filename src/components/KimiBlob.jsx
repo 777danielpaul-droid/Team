@@ -107,6 +107,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         glow.style.background = `radial-gradient(ellipse at center, rgba(0, 250, 255, ${a * 0.9}) 0%, rgba(2, 229, 255, ${a * 0.6}) 25%, rgba(2, 136, 209, ${a * 0.3}) 50%, transparent 70%)`;
         glow.style.filter = 'blur(5px) saturate(1.5)';
         glow.style.animation = 'kiki-beam-glow-pulse 1.9s steps(3, jump-none) infinite';
+        glow.style.setProperty('opacity', String(a * 0.9), 'important'); // base opacity (CSS anim uses filter not opacity)
         glow.style.pointerEvents = 'none';
         laser.appendChild(glow);
 
@@ -130,14 +131,15 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
           0 0 80px 16px rgba(2, 136, 209, ${a * 0.4})
         `;
         beam.style.animation = 'kiki-beam-core-pulse 1.6s steps(4, jump-none) infinite';
+        beam.style.setProperty('opacity', String(a), 'important'); // base opacity
         beam.style.pointerEvents = 'none';
-        laser.appendChild(beam);
+        laser.appendChild(beam); // FIX: re-add missing appendChild for beam layer
 
         // --- Layer 3: Sharp white-hot core (thin central line, like Octocat's laser-core) ---
         const sharpCore = document.createElement('div');
         sharpCore.style.position = 'absolute';
         sharpCore.style.left = `${eyeX}px`;
-        sharpCore.style.top = `${eyeY - 2}px`; // vertikal zentriert in 16px Core (4px hoch → -2px)
+        sharpCore.style.top = `${eyeY - 2}px`; // vertikal zentriert in 16px Core
         sharpCore.style.width = `${Math.max(beamLen, 1)}px`;
         sharpCore.style.height = '4px';
         sharpCore.style.transformOrigin = '0 50%';
@@ -152,6 +154,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         `;
         sharpCore.style.animation = 'kiki-beam-core-pulse 1.6s steps(4, jump-none) infinite';
         sharpCore.style.pointerEvents = 'none';
+        sharpCore.style.setProperty('opacity', String(a), 'important'); // force opacity over CSS animation
         laser.appendChild(sharpCore);
       };
 
