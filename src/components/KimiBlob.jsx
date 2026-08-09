@@ -100,11 +100,11 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         glow.style.left = `${eyeX}px`;
         glow.style.top = `${eyeY}px`;
         glow.style.width = `${Math.max(beamLen, 1)}px`;
-        glow.style.height = '30px';
+        glow.style.height = '44px';
         glow.style.transformOrigin = '0 50%';
         glow.style.transform = `rotate(${angle}rad)`;
         glow.style.borderRadius = '50%';
-        glow.style.background = `radial-gradient(ellipse at center, rgba(2, 136, 209, ${a * 0.55}) 0%, transparent 70%)`;
+        glow.style.background = `radial-gradient(ellipse at center, rgba(0, 250, 255, ${a * 0.9}) 0%, rgba(2, 229, 255, ${a * 0.6}) 25%, rgba(2, 136, 209, ${a * 0.3}) 50%, transparent 70%)`;
         glow.style.filter = 'blur(5px) saturate(1.5)';
         glow.style.animation = 'kiki-beam-glow-pulse 1.9s steps(3, jump-none) infinite';
         glow.style.pointerEvents = 'none';
@@ -120,14 +120,14 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         beam.style.transformOrigin = '0 50%';
         beam.style.transform = `rotate(${angle}rad)`;
         beam.style.borderRadius = '4px';
-        beam.style.background = 'linear-gradient(90deg, #ffffff 0%, #00e5ff 35%, #4fc3f7 65%, #0288d1 100%)';
+        beam.style.background = 'linear-gradient(90deg, #ffffff 0%, #00faff 25%, #00e5ff 40%, #4fc3f7 65%, #0288d1 100%)';
         beam.style.boxShadow = `
-          0 0 2px 1px rgba(255, 255, 255, ${a * 1}),
-          0 0 4px 2px rgba(255, 229, 255, ${a * 0.95}),
-          0 0 8px 4px rgba(79, 195, 247, ${a * 0.85}),
-          0 0 16px 8px rgba(2, 229, 255, ${a * 0.7}),
-          0 0 32px 12px rgba(2, 136, 209, ${a * 0.5}),
-          0 0 56px 16px rgba(2, 136, 209, ${a * 0.35})
+          0 0 3px 2px rgba(255, 255, 255, ${a * 1}),
+          0 0 6px 3px rgba(0, 250, 255, ${a * 1}),
+          0 0 12px 5px rgba(2, 229, 255, ${a * 0.95}),
+          0 0 24px 8px rgba(79, 195, 247, ${a * 0.85}),
+          0 0 48px 12px rgba(2, 229, 255, ${a * 0.7}),
+          0 0 80px 16px rgba(2, 136, 209, ${a * 0.4})
         `;
         beam.style.animation = 'kiki-beam-core-pulse 1.6s steps(4, jump-none) infinite';
         beam.style.pointerEvents = 'none';
@@ -310,20 +310,19 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         }
 
         @keyframes kiki-beam-core-pulse {
-          0%, 100% { opacity: 0.2; }
-          1% { opacity: 1; stroke: #ffffff; }
-          2% { opacity: 0.5; }
-          50% { opacity: 0.9; }
-          50.3% { opacity: 0.15; }
-          98% { opacity: 0.8; }
+          0%, 100% { opacity: 0.15; }
+          0.5% { opacity: 0.95; }
+          50% { opacity: 1; }
+          50.5% { opacity: 0.25; }
+          99.5% { opacity: 0.9; }
         }
 
         @keyframes kiki-beam-glow-pulse {
-          0%, 100% { opacity: 0.3; filter: blur(3px) saturate(1); }
-          1% { opacity: 0.8; filter: blur(4px) saturate(1.3); }
-          50% { opacity: 0.95; filter: blur(6px) saturate(1.5); }
-          50.4% { opacity: 0.2; filter: blur(2px) saturate(0.8); }
-          97% { opacity: 0.5; filter: blur(4px) saturate(1.1); }
+          0%, 100% { opacity: 0.15; filter: blur(3px) saturate(1); }
+          0.5% { opacity: 0.8; filter: blur(6px) saturate(1.5); }
+          50% { opacity: 1; filter: blur(8px) saturate(2); }
+          50.5% { opacity: 0.2; filter: blur(2px) saturate(1); }
+          99.5% { opacity: 0.7; filter: blur(5px) saturate(1.3); }
         }
 
         @keyframes kiki-impact-flash {
