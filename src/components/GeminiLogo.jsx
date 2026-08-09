@@ -1,6 +1,6 @@
 import React from 'react';
 
-const GeminiLogo = ({ size = 36 }) => {
+const GeminiLogo = ({ size = 30 }) => {
   return (
     <div className="fixed z-10 pointer-events-none" style={{ left: 'calc(50% + 82px)', top: 'calc(50% - 90px)', transform: 'translateY(-50%)' }}>
       <style>{`
@@ -14,15 +14,15 @@ const GeminiLogo = ({ size = 36 }) => {
           30% { opacity: 0; transform: scale(0.3); }
           100% { opacity: 0; transform: scale(0.3); }
         }
-        @keyframes ghostPulse30Fast {
+        @keyframes ghostPulseDezent {
           0%, 100% { opacity: 0; }
-          50%      { opacity: 0.3; }
+          50%      { opacity: 0.15; }
         }
         .gemini-wrap {
           position: relative;
           width: ${size}px;
           height: ${size}px;
-          animation: ghostPulse30Fast 1.5s ease-in-out infinite;
+          animation: ghostPulseDezent 1.5s ease-in-out infinite;
         }
         .gemini-wrap svg {
           width: 100%;

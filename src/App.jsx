@@ -62,7 +62,7 @@ export default function App() {
       <ChatGPTLogo size={200} />
 
       {/* Gemini-Logo: centered below ChatGPT */}
-      <GeminiLogo size={36} />
+      <GeminiLogo size={30} />
     </div>
   );
 }
