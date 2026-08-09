@@ -9,7 +9,7 @@ export default function App() {
       <div
         className="absolute inset-0 bg-cover bg-center opacity-15"
         style={{
-          backgroundImage: "url('/images.jpeg')",
+          backgroundImage: "url('/hermi.png')",
           filter: "sepia(0.8) hue-rotate(225deg) saturate(3) brightness(0.6) contrast(1.2)"
         }}
       />
