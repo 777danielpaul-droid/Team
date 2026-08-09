@@ -100,7 +100,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         glow.style.left = `${eyeX}px`;
         glow.style.top = `${eyeY}px`;
         glow.style.width = `${Math.max(beamLen, 1)}px`;
-        glow.style.height = '44px';
+        glow.style.height = '70px';
         glow.style.transformOrigin = '0 50%';
         glow.style.transform = `rotate(${angle}rad)`;
         glow.style.borderRadius = '50%';
@@ -116,10 +116,10 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         beam.style.left = `${eyeX}px`;
         beam.style.top = `${eyeY}px`;
         beam.style.width = `${Math.max(beamLen, 1)}px`;
-        beam.style.height = '8px';
+        beam.style.height = '16px';
         beam.style.transformOrigin = '0 50%';
         beam.style.transform = `rotate(${angle}rad)`;
-        beam.style.borderRadius = '4px';
+        beam.style.borderRadius = '8px';
         beam.style.background = 'linear-gradient(90deg, #ffffff 0%, #00faff 25%, #00e5ff 40%, #4fc3f7 65%, #0288d1 100%)';
         beam.style.boxShadow = `
           0 0 3px 2px rgba(255, 255, 255, ${a * 1}),
