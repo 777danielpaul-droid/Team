@@ -148,19 +148,18 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
 
         // Live DOM measurement — works for ANY displaySize (string or number)
         const canvasRect = canvas.getBoundingClientRect();
-        const wrapRect = wrap.getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect(); // eslint-disable-line @typescript-eslint/no-unused-vars
         const cssScale = canvasRect.width / canvasSize; // actual rendered scale
 
-        // getBoundingClientRect returns TRANSFORMED position — already includes ballWrap offset
-        // No need to add ballOffsetX/Y; it's already baked into canvasRect
-        const eyeLX = canvasRect.left + leftEyeX * cssScale - wrapRect.left;
-        const eyeLY = canvasRect.top + leftEyeY * cssScale - wrapRect.top;
-        const eyeRX = canvasRect.left + rightEyeX * cssScale - wrapRect.left;
-        const eyeRY = canvasRect.top + rightEyeY * cssScale - wrapRect.top;
+        // Eye positions in VIEWPORT space (laser overlay is position:fixed)
+        const eyeLX = canvasRect.left + leftEyeX * cssScale;
+        const eyeLY = canvasRect.top + leftEyeY * cssScale;
+        const eyeRX = canvasRect.left + rightEyeX * cssScale;
+        const eyeRY = canvasRect.top + rightEyeY * cssScale;
 
-        // Mouse in wrapper-space (mouseX/Y in canvas coords, scaled to css)
-        const mouseWrapX = mouseX * cssScale + (canvasRect.left - wrapRect.left);
-        const mouseWrapY = mouseY * cssScale + (canvasRect.top - wrapRect.top);
+        // Mouse in VIEWPORT space
+        const mouseWrapX = mouseX * cssScale + canvasRect.left;
+        const mouseWrapY = mouseY * cssScale + canvasRect.top;
 
         // Beam vectors & lengths to mouse
         const angleL = Math.atan2(mouseWrapY - eyeLY, mouseWrapX - eyeLX);
@@ -168,8 +167,8 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         const angleR = Math.atan2(mouseWrapY - eyeRY, mouseWrapX - eyeRX);
         const lenR = Math.hypot(mouseWrapX - eyeRX, mouseWrapY - eyeRY);
 
-        // Long-range beams (1.5x viewbox) so lasers extend beyond the blob
-        const maxLen = canvasRect.width * 1.5;
+        // Laser beams extend to the cursor AND beyond — spanning the full screen
+        const maxLen = Math.hypot(window.innerWidth, window.innerHeight) * 0.9;
         const endLX = eyeLX + Math.cos(angleL) * Math.max(lenL, maxLen);
         const endLY = eyeLY + Math.sin(angleL) * Math.max(lenL, maxLen);
         const endRX = eyeRX + Math.cos(angleR) * Math.max(lenR, maxLen);
@@ -363,8 +362,8 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
             style={{ width: displaySize, height: displaySize, imageRendering: 'pixelated', overflow: 'visible' }}
           />
         </div>
-        {/* Laser overlay — separate, overflow:visible, no clipping */}
-        <div ref={laserRef} className="absolute inset-0 pointer-events-none" style={{ overflow: 'visible' }} />
+        {/* Laser overlay — fixed to viewport so beams span the entire screen */}
+        <div ref={laserRef} className="fixed inset-0 pointer-events-none" style={{ overflow: 'visible' }} />
       </div>
     </>
   );

@@ -90,38 +90,22 @@ const LaserOctocat = () => {
       </div>
 
       <svg className="laser-overlay">
-        {isNear && (
-          <>
-            <line 
-              x1={eyePositions.left.x} 
-              y1={eyePositions.left.y} 
-              x2={mousePos.x} 
-              y2={mousePos.y} 
-              className="laser-beam" 
-            />
-            <line 
-              x1={eyePositions.right.x} 
-              y1={eyePositions.right.y} 
-              x2={mousePos.x} 
-              y2={mousePos.y} 
-              className="laser-beam" 
-            />
-            <line 
-              x1={eyePositions.left.x} 
-              y1={eyePositions.left.y} 
-              x2={mousePos.x} 
-              y2={mousePos.y} 
-              className="laser-core" 
-            />
-            <line 
-              x1={eyePositions.right.x} 
-              y1={eyePositions.right.y} 
-              x2={mousePos.x} 
-              y2={mousePos.y} 
-              className="laser-core" 
-            />
-          </>
-        )}
+        {isNear && (() => {
+        const MAX_DIST = Math.hypot(window.innerWidth, window.innerHeight);
+        const beams = [
+          { x1: eyePositions.left.x, y1: eyePositions.left.y },
+          { x1: eyePositions.right.x, y1: eyePositions.right.y },
+        ];
+        return beams.map((eye, i) => {
+          const angle = Math.atan2(mousePos.y - eye.y1, mousePos.x - eye.x1);
+          const endX = eye.x1 + Math.cos(angle) * MAX_DIST;
+          const endY = eye.y1 + Math.sin(angle) * MAX_DIST;
+          return [
+            <line key={'beam-' + i} x1={eye.x1} y1={eye.y1} x2={endX} y2={endY} className="laser-beam" />,
+            <line key={'core-' + i} x1={eye.x1} y1={eye.y1} x2={endX} y2={endY} className="laser-core" />,
+          ];
+        }).flat();
+      })()}
       </svg>
     </div>
   );
