@@ -2,7 +2,7 @@ import React from 'react';
 
 const GeminiLogo = ({ size = 51 }) => {
   return (
-    <div className="fixed left-[calc(50%-160px)] top-[calc(50%-95px)] z-10 pointer-events-none" style={{ transform: 'translate(-50%, -50%)', opacity: 0.37 }}>
+    <div className="fixed left-[calc(50%-160px)] top-[calc(50%-95px)] z-10 pointer-events-none" style={{ transform: 'translate(-50%, -50%)' }}>
       <style>{`
         @keyframes soft-pulse {
           0%, 100% { filter: drop-shadow(0 0 18px rgba(139,92,246,0.35)) drop-shadow(0 0 40px rgba(59,130,246,0.2)); opacity: 0.88; }
@@ -47,9 +47,13 @@ const GeminiLogo = ({ size = 51 }) => {
         }
         .flash-star::before { width: 100%; height: 20%; top: 40%; left: 0; }
         .flash-star::after { width: 20%; height: 100%; top: 0; left: 40%; }
+        @keyframes ghostPulse {
+          0%, 100% { opacity: 0.1; }
+          50% { opacity: 0.85; }
+        }
       `}</style>
 
-      <div className="gemini-wrap">
+      <div className="gemini-wrap" style={{ animation: 'ghostPulse 3.2s ease-in-out infinite' }}>
         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="lbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
