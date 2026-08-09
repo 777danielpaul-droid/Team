@@ -1,5 +1,6 @@
 import KimiBlob from './components/KimiBlob';
 import LaserOctocat from './components/LaserOctocat';
+import ClaudeNeonStarfish from './components/ClaudeNeonStarfish';
 
 export default function App() {
   return (
@@ -13,6 +14,9 @@ export default function App() {
       <div className="fixed bottom-8 right-8 z-20 flex items-end justify-center">
         <KimiBlob canvasSize={256} displaySize="min(40vw, 35vh)" autoAim={true} />
       </div>
+
+      {/* Neon Starfish: bottom-right corner (above KI-Blob) */}
+      <ClaudeNeonStarfish />
     </div>
   );
 }
