@@ -1,0 +1,129 @@
+.laser-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.cat-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.3s ease;
+}
+
+.cat-wrapper.near {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.cat-svg {
+  width: 160px;
+  height: 160px;
+  display: block;
+}
+
+.eye-group {
+  transition: opacity 0.15s ease;
+  opacity: 0;
+}
+
+.eye-group.on {
+  opacity: 1;
+  animation: kiki-eye-pulse 2.2s ease-in-out infinite;
+}
+
+.laser-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.laser-beam {
+  stroke: #c084fc;
+  stroke-width: 6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 12px #a855f7) drop-shadow(0 0 28px #7c3aed) drop-shadow(0 0 56px rgba(168, 85, 247, 0.8));
+  animation: kiki-beam-pulse 1.8s ease-in-out infinite;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: kiki-beam-draw 0.8s ease-out forwards, kiki-beam-pulse 1.8s ease-in-out infinite;
+}
+
+.laser-core {
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  opacity: 0.9;
+  animation: kiki-core-pulse 1.3s ease-in-out infinite;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: kiki-core-draw 0.6s ease-out 0.1s forwards, kiki-core-pulse 1.3s ease-in-out infinite;
+}
+
+.hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #555;
+  font-size: 13px;
+  font-family: monospace;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.hint.hidden {
+  opacity: 0;
+}
+
+@keyframes kiki-beam-pulse {
+  0%, 100% {
+    stroke: #c084fc;
+    filter: drop-shadow(0 0 14px #a855f7) drop-shadow(0 0 32px #7c3aed) drop-shadow(0 0 64px rgba(168, 85, 247, 0.9));
+  }
+  50% {
+    stroke: #d8b4fe;
+    filter: drop-shadow(0 0 18px #a855f7) drop-shadow(0 0 38px #7c3aed) drop-shadow(0 0 72px rgba(168, 85, 247, 1));
+  }
+}
+
+@keyframes kiki-core-pulse {
+  0%, 100% {
+    stroke: #f3e8ff;
+    opacity: 0.8;
+  }
+  50% {
+    stroke: #ffffff;
+    opacity: 1;
+  }
+}
+
+@keyframes kiki-beam-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes kiki-core-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes kiki-eye-pulse {
+  0%, 100% {
+    fill: #a855f7;
+    filter: drop-shadow(0 0 10px #7c3aed);
+  }
+  50% {
+    fill: #c084fc;
+    filter: drop-shadow(0 0 14px #a855f7) drop-shadow(0 0 24px #7c3aed);
+  }
+}
