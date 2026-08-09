@@ -2,7 +2,7 @@ import React from 'react';
 
 const ChatGPTLogo = ({ size = 200 }) => {
   return (
-    <div className="fixed left-1/2 z-10 pointer-events-none" style={{ top: '402px', transform: 'translate(100px, 0)' }}>
+    <div className="fixed left-1/2 z-10 pointer-events-none" style={{ top: '397px', transform: 'translate(100px, 0)' }}>
       <style>{`
         @keyframes draw {
           0%   { stroke-dashoffset: 1000; }
