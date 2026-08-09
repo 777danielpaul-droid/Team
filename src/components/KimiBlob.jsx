@@ -13,7 +13,7 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
     const ballWrap = ballWrapRef.current;
     const laser = laserRef.current;
 
-    let mouseX = 8, mouseY = 127;
+    let mouseX = -50, mouseY = -50; // far outside canvas — safe default, lasers OFF
     let ballX = 0, ballY = 0;
     let velX = 0, velY = 0;
     let time = 0;
@@ -31,8 +31,8 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
       lastMouseMove = Date.now();
     };
     const handleMouseLeave = () => {
-      mouseX = 8;
-      mouseY = 127;
+      mouseX = -50;
+      mouseY = -50;
       laserIntensity = 0; // Force laser off when mouse leaves
     };
 
