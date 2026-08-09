@@ -1,33 +1,18 @@
-import { useState } from 'react';
 import KimiBlob from './components/KimiBlob';
 import LaserOctocat from './components/LaserOctocat';
 
 export default function App() {
-  const [showLaser, setShowLaser] = useState(false);
-
-  if (showLaser) {
-    return (
-      <>
-        <LaserOctocat />
-        <button
-          onClick={() => setShowLaser(false)}
-          className="fixed top-4 right-4 z-50 px-3 py-1 text-xs bg-transparent hover:bg-white/10 text-white rounded transition-colors"
-        >
-          ← Zurück zu KI-Blob
-        </button>
-      </>
-    );
-  }
-
   return (
-    <main className="relative h-screen w-full overflow-hidden flex items-end justify-center pb-20 bg-transparent">
-      <KimiBlob canvasSize={384} displaySize="min(80vw, 70vh)" autoAim={true} />
-      <button
-        onClick={() => setShowLaser(true)}
-        className="fixed top-4 right-4 z-50 px-3 py-1 text-xs bg-transparent hover:bg-white/10 text-white rounded transition-colors"
-      >
-        🎯 Laser-Octocat
-      </button>
-    </main>
+    <div className="fixed top-0 left-0 w-full h-screen bg-black z-0">
+      {/* LaserOctocat: top-left area */}
+      <div className="fixed top-0 left-0 w-full h-screen z-10">
+        <LaserOctocat />
+      </div>
+
+      {/* KI-Blob: bottom-right area, smaller for coexistence */}
+      <div className="fixed bottom-8 right-8 z-20 flex items-end justify-center">
+        <KimiBlob canvasSize={256} displaySize="min(40vw, 35vh)" autoAim={true} />
+      </div>
+    </div>
   );
 }
