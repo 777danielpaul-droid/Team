@@ -21,6 +21,9 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
     let blinkTimer = 0;
     let blinkProgress = 0;
     let laserIntensity = 0;
+    let laserActiveSince = null;  // wann laser aktiv wurde (für 2s-Coop-Trigger)
+    let blobLaserCallback = null; // callback für Octokat-Coop-Trigger
+    window.__blobLaserActive = (cb) => { blobLaserCallback = cb; };
     let rafId;
 
     const handleMouseMove = (e) => {
@@ -37,6 +40,17 @@ export default function KimiBlob({ canvasSize = 128, displaySize = 320 }) {
         : 0;
       laserIntensity = targetLaser;
       renderLasers(); // render immediately — don't wait for rAF which may be throttled
+
+      // --- COOP: 2-Sekunden-Timer für Octokat-Trigger ---
+      const now = performance.now();
+      if (targetLaser > 0.05) {
+        if (laserActiveSince === null) laserActiveSince = now;
+        const elapsed = now - laserActiveSince;
+        if (elapsed >= 2000 && blobLaserCallback) blobLaserCallback(true); // >2s → Octokat start
+      } else {
+        laserActiveSince = null;
+        if (blobLaserCallback) blobLaserCallback(false); // laser off → Octokat stop
+      }
     };
 
     const handleMouseLeave = () => {

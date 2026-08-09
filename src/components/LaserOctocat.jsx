@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './LaserOctocat.css';
 
-const THRESHOLD = 440;
 const PURPLE = '#a855f7';
 const PURPLE_GLOW = '#7c3aed';
 const PURPLE_BEAM = '#c084fc';
@@ -22,13 +21,6 @@ const LaserOctocat = () => {
 
     if (catSvgRef.current) {
       const rect = catSvgRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const dist = Math.sqrt(
-        Math.pow(e.clientX - centerX, 2) +
-        Math.pow(e.clientY - centerY, 2)
-      );
-
       const scaleX = rect.width / 98;
       const scaleY = rect.height / 96;
 
@@ -42,14 +34,26 @@ const LaserOctocat = () => {
           y: rect.top + 42 * scaleY
         }
       });
-
-      setIsNear(dist < THRESHOLD);
     }
   }, []);
 
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+
+    // --- COOP TRIGGER: Octokat shootet nur wenn Blob-Laser >2s aktiv ---
+    // Verwende window.__blobLaserActive statt THRESHOLD-Proximity-Trigger
+    const blobCb = window.__blobLaserActive;
+    if (typeof blobCb === 'function') {
+      blobCb((active) => setIsNear(active));
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      // cleanup: entferne callback, falls window-object cleanup nötig
+      if (typeof window.__blobLaserActive === 'object' && window.__blobLaserActive !== null) {
+        window.__blobLaserActive = null;
+      }
+    };
   }, [handleMouseMove]);
 
   return (
