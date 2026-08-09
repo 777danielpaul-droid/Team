@@ -4,16 +4,12 @@ import ClaudeNeonStarfish from './components/ClaudeNeonStarfish';
 
 export default function App() {
   return (
-    <div
-      className="fixed top-0 left-0 w-full h-screen z-0"
-      style={{
-        backgroundImage: "linear-gradient(135deg, #1a0033 0%, #2a004d 50%, #0f001a 100%)"
-      }}>
+    <div className="fixed top-0 left-0 w-full h-screen bg-black z-0">
       {/* Bild als Hintergrund in lila Tönung */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-15"
         style={{
-          backgroundImage: "url('/Users/danielpaul/Desktop/images.jpeg')",
+          backgroundImage: "url('/images.jpeg')",
           filter: "sepia(0.8) hue-rotate(225deg) saturate(3) brightness(0.6) contrast(1.2)"
         }}
       />
